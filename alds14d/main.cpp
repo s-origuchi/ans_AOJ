@@ -11,12 +11,12 @@ long *getinput(long *n, long *k)
   return w;
 }
 
-bool check_track_count(long w[], long n, long target, long k)
+int check_track_count(long w[], long n, long target, long k)
 {
   long tmpw=w[0], count=1;
   for(int i=1; i<n; i++)
   {
-    if (w[i] > target) return false;
+    if (w[i] > target) return 1;
     if (w[i] + tmpw <= target)
     {
       tmpw += w[i];
@@ -25,10 +25,13 @@ bool check_track_count(long w[], long n, long target, long k)
       count ++;
     }
   }
-  if (count > k) return 1;//¥È¥é¥Ã¥¯¤ÎÂæ¿ô¤¬Â¿¤¤ -> ÀÑºÜÎÌ¤¬Â­¤ê¤Ê¤¤
-  if (count < k) return -1;//¥È¥é¥Ã¥¯¤ÎÂæ¿ô¤¬¾¯¤Ê¤¤ -> ÀÑºÜÎÌÂ¿¤¹¤®
 
-  if (tmpw > k) return -1;
+  std::cout << "  count:"  << count <<"  tmpw:"<<tmpw;
+  if (tmpw > target) return 1;//æœ€å¾Œã®1å°ãŒç©è¼‰é‡è¶…ãˆãŸ
+  if (count > k) return 1;//ãƒˆãƒ©ãƒƒã‚¯ã®å°æ•°ãŒå¤šã„ -> ç©è¼‰é‡ãŒè¶³ã‚Šãªã„
+  if (count < k) return -1;//ãƒˆãƒ©ãƒƒã‚¯ã®å°æ•°ãŒå°‘ãªã„ -> ç©è¼‰é‡å¤šã™ã
+
+
   return 0;
 }
 
@@ -50,18 +53,15 @@ int main()
   low = sum(w,n)/(k+1);
   do{
     long mid = (high + low)/2;
+    std::cout << "high:"<<high<<",low:"<<low<< ",mid:"<< mid;
     int tcheck = check_track_count(w, n,mid,k);
-    std::cout << "high:"<<high<<",low:"<<low<<
-                 ",mid:"<< mid<<",tcount"<<tcheck <<std::endl;
-    if (tcheck > 0) //¥È¥é¥Ã¥¯¤ÎÀÑºÜÎÌ¤¬Â¿¤¹¤®
+    
+    std::cout <<"  tcheck:"<< tcheck <<std::endl;
+    if (tcheck<=0  ) //ãƒˆãƒ©ãƒƒã‚¯ã®ç©è¼‰é‡ãŒå¤šã™ã
       high = mid;
-    else if (tcheck == -1) //¥È¥é¥Ã¥¯¤ÎÀÑºÜÎÌ¤¬Â­¤ê¤Ê¤¤
-      low = mid ;
-
-    if (high - low == 1){
-      low++;
-      continue;
-    }
+    else if (low == mid)  low ++;//ãƒˆãƒ©ãƒƒã‚¯ã®ç©è¼‰é‡ãŒè¶³ã‚Šãªã„ ã‹ã¤ low ==mid 
+    else   low = mid ;
+      
   }
   while (high != low);
   std::cout << high << std::endl;
